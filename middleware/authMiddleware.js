@@ -18,8 +18,8 @@ const authMiddleware = async (req, res, next) => {
             return res.status(401).json({ message: 'Authentication required' });
         }
 
-        // Verify the token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        let extractedToken = token.split(" ")[1]
+        const decoded = jwt.verify(extractedToken, process.env.JWT_SECRET);
 
         // Find the user by ID from the token
         const user = await User.findById(decoded.userId);
