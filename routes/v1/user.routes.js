@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { createUser, login, adminResetPassword, logout } = require('../../controllers/v1/user.controller');
+const { createUser, login, adminResetPassword, logout, fetchUsers } = require('../../controllers/v1/user.controller');
 const authMiddleware = require('../../middleware/authMiddleware');
 
 /**
@@ -32,6 +32,17 @@ userRouter.post(
         body('password', 'Password must be at least 6 characters').isLength({ min: 6 }),
     ],
     createUser
+);
+
+/**
+ * Route to create a new user.
+ * @name GET /user
+ * @function
+ * @memberof module:routes/user~userRouter
+ */
+userRouter.get(
+    '/user',
+    fetchUsers
 );
 
 /**

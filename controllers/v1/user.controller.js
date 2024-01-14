@@ -75,26 +75,26 @@ const adminResetPassword = async (req, res) => {
         const isAdmin = req.user.isAdmin; // Assuming you have an isAdmin property in your user model
 
         if (!isAdmin) {
-            return res.status(403).json({message: 'Access denied. Admin privileges required.'});
+            return res.status(403).json({ message: 'Access denied. Admin privileges required.' });
         }
 
         // Validate user input (e.g., new password)
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({errors: errors.array()});
+            return res.status(400).json({ errors: errors.array() });
         }
 
         // Check if the email matches "akibeulah@gmail.com"
         const userEmail = req.body.email;
         if (userEmail !== 'akibeulah@gmail.com') {
-            return res.status(400).json({message: 'Email does not match "akibeulah@gmail.com"'});
+            return res.status(400).json({ message: 'Email does not match "akibeulah@gmail.com"' });
         }
 
         // Find the user by email
-        const user = await User.findOne({email: userEmail});
+        const user = await User.findOne({ email: userEmail });
 
         if (!user) {
-            return res.status(404).json({message: 'User not found'});
+            return res.status(404).json({ message: 'User not found' });
         }
 
         // Update the user's password
@@ -105,10 +105,10 @@ const adminResetPassword = async (req, res) => {
         // Save the updated user
         await user.save();
 
-        return res.status(200).json({message: 'Password reset successfully'});
+        return res.status(200).json({ message: 'Password reset successfully' });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({message: 'Internal Server Error'});
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 }
 
@@ -129,10 +129,23 @@ const logout = async (req, res) => {
     }
 };
 
+const fetchUsers = async (req, res) => {
+    try {
+        User.find()
+            .then((response) => {
+                return res.status(200).json({ message: 'OK', data: response });
+            })
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
 module.exports = {
     createUser,
     login,
     resetPassword,
     logout,
-    adminResetPassword
+    adminResetPassword,
+    fetchUsers
 }
