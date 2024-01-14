@@ -1,7 +1,7 @@
 const express = require('express');
 const { body } = require('express-validator');
 const authMiddleware = require('../../middleware/authMiddleware');
-const { fetchMessages, sendMessage, setMessageSeen } = require('../../controllers/v1/message.controller');
+const { fetchMessages, sendMessage, setMessageSeen, fetchMessageHistory } = require('../../controllers/v1/message.controller');
 
 const messageRouter = express.Router();
 
@@ -49,6 +49,20 @@ messageRouter.put(
     '/messages/:messageId/seen', 
     authMiddleware, 
     setMessageSeen
+);
+
+/**
+ * Route to set a message as seen.
+ * @name GET /messages/:messageId/seen
+ * @function
+ * @memberof module:routes/message~messageRouter
+ * @param {string} path - Express route path
+ * @param {callback} middleware - Express middleware.
+ */
+messageRouter.get(
+    '/messages/:messageId', 
+    authMiddleware, 
+    fetchMessageHistory
 );
 
 
