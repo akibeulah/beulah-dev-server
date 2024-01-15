@@ -58,7 +58,7 @@ const login = async (req, res) => {
             expiresIn: '7d',
         });
         user.password = "SERVER_SECRET"
-        return res.status(200).json({ token, user });
+        return res.status(200).json({ token, user, secret: "jndwfjn209329e032nd230nf02f-m3oiv2-2vn429ng4nf4u9fn2" });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal Server Error' });

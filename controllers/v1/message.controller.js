@@ -1,6 +1,5 @@
 const Message = require('../../models/message');
 
-// Controller function to fetch messages
 const fetchMessages = async (req, res) => {
     try {
         const messages = await Message.aggregate([
@@ -17,6 +16,13 @@ const fetchMessages = async (req, res) => {
             {
                 $group: {
                     _id: {
+                        room: {
+                            $cond: {
+                                if: { $lt: ["$sender", "$recipient"] },
+                                then: "$sender",
+                                else: "$recipient"
+                            }
+                        },
                         sender: "$sender",
                         recipient: "$recipient"
                     },
@@ -28,7 +34,7 @@ const fetchMessages = async (req, res) => {
             },
             {
                 $lookup: {
-                    from: "users", // Assuming you have a "users" collection
+                    from: "users",
                     localField: "sender",
                     foreignField: "_id",
                     as: "senderDetails"
@@ -50,6 +56,8 @@ const fetchMessages = async (req, res) => {
             },
             {
                 $project: {
+                    _id: 1, // Include _id if needed
+                    room: "$_id.room",
                     sender: {
                         _id: "$senderDetails._id",
                         username: "$senderDetails.username",
@@ -68,7 +76,24 @@ const fetchMessages = async (req, res) => {
             }
         ]);
 
-        res.status(200).json(messages);
+        const uniqueRoomIds = {};
+        let filteredMessages = []
+
+        messages.forEach(item => {
+            let arr = [item.sender._id, item.recipient._id];
+            arr.sort();
+            const roomId = arr.join("");
+        
+            if (!uniqueRoomIds[roomId] || item.updatedAt > uniqueRoomIds[roomId].updatedAt) {
+                uniqueRoomIds[roomId] = item;
+                filteredMessages.push(item)
+            }
+        });
+        
+        console.log(Object.values(uniqueRoomIds))
+        
+   
+        res.status(200).json(filteredMessages);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
