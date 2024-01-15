@@ -129,8 +129,15 @@ const setMessageSeen = async (req, res) => {
 const fetchMessageHistory = async (req, res) => {
     try {
         const recipientId = req.params.recipientId;
+        console.log(recipientId)
+        console.log(req.user._id)
 
-        const messages = await Message.find({ $or: [{ sender: req.user._id }, { recipient: recipientId }] })
+        const messages = await Message.find({
+            $or: [
+                { sender: req.user._id, recipient: recipientId },
+                { sender: recipientId, recipient: req.user._id }
+            ]
+        })
             .populate('sender', 'username email')
             .populate('recipient', 'username email')
             .exec();
@@ -140,7 +147,7 @@ const fetchMessageHistory = async (req, res) => {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-};    
+};
 
 
 module.exports = {

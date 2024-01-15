@@ -60,7 +60,7 @@ messageRouter.put(
  * @param {callback} middleware - Express middleware.
  */
 messageRouter.get(
-    '/messages/:messageId', 
+    '/messages/:recipientId', 
     authMiddleware, 
     fetchMessageHistory
 );
